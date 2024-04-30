@@ -16,6 +16,12 @@
                         <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
                     </ul>
                 </li>
+
+                {% comment %} {% if user.is_authenticated %} {% endcomment %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Cerrar Sesión</a></li>
+                {% comment %} {% else %} {% endcomment %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a></li>
+                {% comment %} {% endif %} {% endcomment %}
             </ul>
             <form class="d-flex">
                 <button class="btn btn-outline-dark" type="submit">
