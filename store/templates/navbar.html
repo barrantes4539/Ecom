@@ -17,11 +17,12 @@
                     </ul>
                 </li>
 
-                {% comment %} {% if user.is_authenticated %} {% endcomment %}
+                {% if user.is_authenticated %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Cerrar Sesión</a></li>
-                {% comment %} {% else %} {% endcomment %}
+                {% else %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a></li>
-                {% comment %} {% endif %} {% endcomment %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Regístrate</a></li>
+                {% endif %}
             </ul>
             <form class="d-flex">
                 <button class="btn btn-outline-dark" type="submit">
