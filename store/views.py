@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Product
+from .models import Product, Category
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -7,7 +7,8 @@ from django.contrib.auth.forms import UserCreationForm
 from .forms import SignUpForm
 from django import forms
 
-#Store
+
+#Store views
 def home(request):
     products = Product.objects.all()
     return render(request, 'home.html', {'products':products})
@@ -18,6 +19,19 @@ def about(request):
 def product(request,pk):
     product = Product.objects.get(id=pk)
     return render(request, 'product.html', {'product':product})
+
+def category(request, cat):
+    #Grab the category from the url
+    print(f"Received category: {cat}")
+    try:
+        # Look up the category
+        category = Category.objects.get(name=cat)
+        print(f"URL category: {category}")
+        products = Product.objects.filter(category=category)
+        return render(request, 'category.html', {'products':products,'category':category})
+    except:
+        messages.success(request, ('La categoría no existe.'))
+        return redirect('home')
 #Authentication
 def login_user(request):
     if request.method == "POST":
