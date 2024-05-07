@@ -24,10 +24,34 @@
               <br /><br />
 
               <a href="{% url 'home' %}" class="btn btn-secondary">Inicio</a>
+              <button type="button" value="{{ product.id }}" id="add-cart" class="btn btn-secondary">Añadir Al Carrito</button>
             </center>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+<script>
+  //Check if button pressed
+  $(document).on('click', '#add-cart', function(e){
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url 'cart_add' %}',
+      data: {
+        product_id: $('#add-cart').val(),
+        csrfmiddlewaretoken: '{{ csrf_token }}',
+        action: 'post'
+      },
+
+      success: function(json){
+        console.log(json)
+      },
+      error: function(xhr, errmsg, err){
+
+      }
+    });
+  });
+</script>
 {% endblock %}

@@ -2,6 +2,7 @@ from django.db import models
 import datetime
 
 
+
 #Categories of Products
 class Category(models.Model):
     name = models.CharField(max_length=50)
