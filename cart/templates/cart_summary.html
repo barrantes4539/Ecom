@@ -65,7 +65,7 @@
                                 {% else %}
                                     <p>Tu carrito está vacío.</p>
                                 {% endif %}
-                                <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-info btn-block btn-lg mt-4">
+                                <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-info btn-block btn-lg mt-4" id="btnBuy">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <span>Comprar<i class="fas fa-long-arrow-alt-right ms-2 align-items-center"></i></span>
                                     </div>
@@ -75,9 +75,9 @@
                           </div>
           
                         </div>
-                        {% comment %} <div class="col-lg-5">
+                       
           
-                          <div class="card bg-primary text-white rounded-3">
+                          <div class="card bg-primary text-white rounded-3" id="buyDetailsModal" style="display: none;">
                             <div class="card-body">
                               <div class="d-flex justify-content-between align-items-center mb-4">
                                 <h5 class="mb-0">Detalles de Compra</h5>
@@ -144,7 +144,7 @@
                             </div>
                           </div>
           
-                        </div> {% endcomment %}
+                        
           
                       </div>
           
@@ -155,4 +155,38 @@
             </div>
           </section>
     <br/> <br/> <br/> <br/> <br/>
+
+    
+<script>
+    document.getElementById('btnBuy').addEventListener('click', function () {
+        document.getElementById('buyDetailsModal').style.display = 'block';
+    });
+      //Check if button pressed
+  $(document).on('click', '#add-cart', function(e){
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url 'cart_add' %}',
+      data: {
+        product_id: $('#add-cart').val(),
+        csrfmiddlewaretoken: '{{ csrf_token }}',
+        action: 'post'
+      },
+      success: function(json) {
+        console.log(json)
+        // Update cart quantity using a safer method
+        const cartQuantityElement = document.getElementById('cart_quantity');
+
+        if (cartQuantityElement) {
+          cartQuantityElement.textContent = json.qty;  // Update content directly (since it's just text)
+        } else {
+          console.error('Cart quantity element not found: #cart_quantity');
+        }
+      },
+      error: function(xhr, errmsg, err) {
+        // Handle errors (display message, etc.)
+      }
+    });
+  });
+</script>
 {% endblock %}
