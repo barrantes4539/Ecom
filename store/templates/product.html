@@ -44,12 +44,19 @@
         csrfmiddlewaretoken: '{{ csrf_token }}',
         action: 'post'
       },
-
-      success: function(json){
+      success: function(json) {
         console.log(json)
-      },
-      error: function(xhr, errmsg, err){
+        // Update cart quantity using a safer method
+        const cartQuantityElement = document.getElementById('cart_quantity');
 
+        if (cartQuantityElement) {
+          cartQuantityElement.textContent = json.qty;  // Update content directly (since it's just text)
+        } else {
+          console.error('Cart quantity element not found: #cart_quantity');
+        }
+      },
+      error: function(xhr, errmsg, err) {
+        // Handle errors (display message, etc.)
       }
     });
   });

@@ -5,7 +5,10 @@ from django.http import JsonResponse
 
 #Cart
 def cart_summary(request):
-    return render(request, "cart_summary.html", {})
+    # Get the cart
+    cart = Cart(request)
+    cart_products = cart.get_products
+    return render(request, "cart_summary.html", {"cart_products":cart_products})
 
 def cart_add(request):
     # Get the cart
@@ -21,8 +24,12 @@ def cart_add(request):
         # Save to session
         cart.add(product=product)
         
+        #Get cart quantity
+        cart_quantity = cart.__len__()
+        
         # Return response
-        response = JsonResponse({'Product Name: ': product.name})
+        # response = JsonResponse({'Product Name: ': product.name})
+        response = JsonResponse({'qty: ': cart_quantity})
         return response
     
 def cart_delete():

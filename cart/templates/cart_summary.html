@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-        <!-- Header-->
+        {% comment %} <!-- Header-->
         <header class="bg-dark py-5">
             <div class="container px-4 px-lg-5 my-5">
                 <div class="text-center text-white">
@@ -8,85 +9,150 @@
                     <p class="lead fw-normal text-white-50 mb-0">Mira tu carrito de compras!!</p>
                 </div>
             </div>
-        </header>
-        <!-- Section-->
-        <section class="py-5">
-            <div class="container px-4 px-lg-5 mt-5">
-                <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-                    {% for product in products %}
-
-                        {% if product.is_sale %}
-                            <div class="col mb-5">
-                                <div class="card h-100">
-                                    <!-- Sale badge-->
-                                <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Vendido</div>
-                                    <!-- Product image-->
-                                    <img class="card-img-top" style="height: 150px; width: 100%;" src="{{product.image.url}}" alt="..." />
-                                    <!-- Product details-->
-                                    <div class="card-body p-4">
-                                        <div class="text-center">
-                                            <!-- Product name-->
-                                            <h5 class="fw-bolder">{{ product.name }}</h5>
-                                            <!-- Product price-->
-                                            {{ product.price }}
-                                            <br/>
-                                            {{ product.description }}
-
+        </header> {% endcomment %}
+        <section class="h-100 h-custom" style="background-color: #eee;">
+            <div class="container py-5 h-100">
+              <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col">
+                  <div class="card">
+                    <div class="card-body p-4">
+          
+                      <div class="row">
+          
+                        <div class="col-lg-7" style="width: 100%;">
+                          {% comment %} <h5 class="mb-3"><a href="{% url 'store.home' %}" class="text-body"><i
+                                class="fas fa-long-arrow-alt-left me-2"></i>Continuar Comprando</a></h5> {% endcomment %}
+                          <hr>
+          
+                          <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                              <p class="mb-1">Carrito de Compras</p>
+                              {% comment %} <p class="mb-0">Tienes {{ cart|length }} en tu carrito</p> {% endcomment %}
+                            </div>
+                          </div>
+                          
+                          <div class="card mb-3">
+                            <div class="card-body">
+                                {% if cart_products|length > 0 %}
+                                    {% for product in cart_products %}
+                                        <div class="d-flex justify-content-between">
+                                            <div class="d-flex flex-row align-items-center">
+                                                <div>
+                                                <img
+                                                    src="{{product.image.url}}"
+                                                    class="img-fluid rounded-3" alt="Shopping item" style="width: 65px;">
+                                                </div>
+                                                <div class="ms-3" style="margin-right: 5px;">
+                                                    <h6>{{product.name}}</h6>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex flex-row align-items-center">
+                                                <div style="width: 60px; margin-right: 15px;">
+                                                    <select class="form-select-sm" id="qty-cart">
+                                                        <option selected>0</option>
+                                                        <option value="1">1</option>
+                                                        <option value="2">2</option>
+                                                        <option value="3">3</option>
+                                                    </select>
+                                                </div>
+                                                <div style="width: 80px;">
+                                                <h6 class="mb-0">{{product.price}}</h6>
+                                                </div>
+                                                <a href="#!" style="color: #cecece;"><i class="fas fa-trash-alt"></i></a>
+                                            </div>
                                         </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <p>Tu carrito está vacío.</p>
+                                {% endif %}
+                                <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-info btn-block btn-lg mt-4">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span>Comprar<i class="fas fa-long-arrow-alt-right ms-2 align-items-center"></i></span>
                                     </div>
-                                    <!-- Product actions-->
-                                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                        <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="{% url 'product' product.id %}">View Product</a></div>
-                                    </div>
-                                </div>
+                                </button>
+                              
                             </div>
-                        {% else %}
-                            <div class="col mb-5">
-                                <div class="card h-100">
-                                    <!-- Product image-->
-                                    <img class="card-img-top" style="height: 150px; width: 100%;" src="{{product.image.url}}" alt="..." />
-                                    <!-- Product details-->
-                                    <div class="card-body p-4">
-                                        <div class="text-center">
-                                            <!-- Product name-->
-                                            <h5 class="fw-bolder">{{ product.name }}</h5>
-                                            <!-- Product price-->
-                                            <strike>{{ product.price }}</strike>
-                                            &nbsp;
-                                            ${{ product.sale_price }}
-                                            <br/>
-                                            {{ product.description }}
-                                        </div>
-                                    </div>
-                                    <!-- Product actions-->
-                                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                        <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="{% url 'product' product.id %}">View Product</a></div>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                    {% comment %} {% for products in products %} {% endcomment %}
-                    {% comment %} <div class="col mb-5">
-                        <div class="card h-100">
-                            <!-- Product image-->
-                            <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
-                            <!-- Product details-->
-                            <div class="card-body p-4">
-                                <div class="text-center">
-                                    <!-- Product name-->
-                                    <h5 class="fw-bolder">Fancy Product</h5>
-                                    <!-- Product price-->
-                                    $40.00 - $80.00
-                                </div>
-                            </div>
-                            <!-- Product actions-->
-                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">View options</a></div>
-                            </div>
+                          </div>
+          
                         </div>
-                    </div> {% endcomment %}
+                        {% comment %} <div class="col-lg-5">
+          
+                          <div class="card bg-primary text-white rounded-3">
+                            <div class="card-body">
+                              <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="mb-0">Detalles de Compra</h5>
+                                <img width="48" height="48" src="{% static 'img/icons/icon-payment.png' %}" alt="online-payment-"
+                                  class="img-fluid rounded-3" style="width: 45px;"> 
+                              </div>
+          
+                              
+                            
+          
+                              <form class="mt-4">
+                                <div data-mdb-input-init class="form-outline form-white mb-4">
+                                  <input type="text" id="typeName" class="form-control form-control-lg" siez="17"
+                                    placeholder="Nombre de Tarjeta" />
+                                </div>
+          
+                                <div data-mdb-input-init class="form-outline form-white mb-4">
+                                  <input type="text" id="typeText" class="form-control form-control-lg" siez="17"
+                                    placeholder="1234 5678 9012 3457" minlength="19" maxlength="19" />
+                                </div>
+          
+                                <div class="row mb-4">
+                                  <div class="col-md-6">
+                                    <div data-mdb-input-init class="form-outline form-white">
+                                      <input type="text" id="typeExp" class="form-control form-control-lg"
+                                        placeholder="MM/YYYY" size="7" id="exp" minlength="7" maxlength="7" />
+                                      <label class="form-label" for="typeExp">Expiration</label>
+                                    </div>
+                                  </div>
+                                  <div class="col-md-6">
+                                    <div data-mdb-input-init class="form-outline form-white">
+                                      <input type="password" id="typeText" class="form-control form-control-lg"
+                                        placeholder="&#9679;&#9679;&#9679;" size="1" minlength="3" maxlength="3" />
+                                      <label class="form-label" for="typeText">Cvv</label>
+                                    </div>
+                                  </div>
+                                </div>
+          
+                              </form>
+          
+                              <hr class="my-4">
+          
+                              <div class="d-flex justify-content-between">
+                                <p class="mb-2">Subtotal</p>
+                                <p class="mb-2">$4798.00</p>
+                              </div>
+          
+                              <div class="d-flex justify-content-between">
+                                <p class="mb-2">Envío</p>
+                                <p class="mb-2">$20.00</p>
+                              </div>
+          
+                              <div class="d-flex justify-content-between mb-4">
+                                <p class="mb-2">Total</p>
+                                <p class="mb-2">$4818.00</p>
+                              </div>
+          
+                              <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-info btn-block btn-lg">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>Checkout <i class="fas fa-long-arrow-alt-right ms-2"></i></span>
+                                </div>
+                              </button>
+          
+                            </div>
+                          </div>
+          
+                        </div> {% endcomment %}
+          
+                      </div>
+          
+                    </div>
+                  </div>
                 </div>
+              </div>
             </div>
-        </section>
+          </section>
+    <br/> <br/> <br/> <br/> <br/>
 {% endblock %}
