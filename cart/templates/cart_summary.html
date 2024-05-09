@@ -48,15 +48,23 @@
                                             </div>
                                             <div class="d-flex flex-row align-items-center">
                                                 <div style="width: 60px; margin-right: 15px;">
-                                                    <select class="form-select-sm" id="qty-cart">
-                                                        <option selected>0</option>
+                                                  <select class="form-select-sm quantity-select" data-product-id="{{ product.id }}">
+                                                        {% for key, value in quantities.items %}
+                                                          {% if key == product.id|slugify %}
+                                                          <option selected value="{{ value }}">{{ value }}</option>
+                                                          {% endif %}
+                                                        {% endfor %}
                                                         <option value="1">1</option>
                                                         <option value="2">2</option>
                                                         <option value="3">3</option>
+                                                        <option value="4">4</option>
+                                                        <option value="5">5</option>
+                                                        <option value="6">6</option>
                                                     </select>
                                                 </div>
                                                 <div style="width: 80px;">
-                                                <h6 class="mb-0">{{product.price}}</h6>
+                                                  <h6 class="mb-0 product-price" id="product-price" data-product-price="{{product.price}}">{{product.price}}</h6>
+                                                  <h6 class="mb-0 product-id" data-product-id="{{product.id}}" hidden></h6>
                                                 </div>
                                                 <a href="#!" style="color: #cecece;"><i class="fas fa-trash-alt"></i></a>
                                             </div>
@@ -161,32 +169,51 @@
     document.getElementById('btnBuy').addEventListener('click', function () {
         document.getElementById('buyDetailsModal').style.display = 'block';
     });
-      //Check if button pressed
-  $(document).on('click', '#add-cart', function(e){
-    e.preventDefault();
-    $.ajax({
-      type: 'POST',
-      url: '{% url 'cart_add' %}',
-      data: {
-        product_id: $('#add-cart').val(),
-        csrfmiddlewaretoken: '{{ csrf_token }}',
-        action: 'post'
-      },
-      success: function(json) {
-        console.log(json)
-        // Update cart quantity using a safer method
-        const cartQuantityElement = document.getElementById('cart_quantity');
-
-        if (cartQuantityElement) {
-          cartQuantityElement.textContent = json.qty;  // Update content directly (since it's just text)
-        } else {
-          console.error('Cart quantity element not found: #cart_quantity');
+    $(document).ready(function() {
+      $('.quantity-select').on('change', function() {
+        var productId = $(this).data('product-id');
+        var quantity = parseInt($(this).val());
+    
+        if (isNaN(quantity)) {
+          console.error('Invalid quantity value.');
+          return; // Exit if quantity is invalid
         }
-      },
-      error: function(xhr, errmsg, err) {
-        // Handle errors (display message, etc.)
-      }
+    
+        var priceText = parseInt($(this).closest('.d-flex.justify-content-between').find('.product-price').data('product-price'));
+        console.log(priceText)
+        if (!priceText) {
+          console.error('Product price not found.');
+          return; // Handle missing price scenario (e.g., display error message)
+        }
+        if (isNaN(priceText)) {
+          console.log(priceText)
+          console.error('Error retrieving product price.');
+          return; // Exit if price retrieval fails
+        }
+    
+        var product_price = quantity * parseInt(priceText);
+        console.log(product_price)
+        //$('#product-price').text(product_price);
+        $(this).closest('.d-flex.justify-content-between').find('.product-price').text(product_price);        
+        // Example AJAX call to update server-side cart (replace with your implementation)
+        $.ajax({
+          url: '{% url 'cart_update' %}', // Replace with your cart update endpoint
+          type: 'POST',
+          data: {
+            productId: productId,
+            quantity: quantity,
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+          },
+          success: function(data) {
+            // Handle successful cart update on the server (optional)
+            console.log('Cart updated successfully on server:', data);
+          },
+          error: function(xhr, status, error) {
+            console.error('Error updating cart on server:', error);
+            // Handle potential server errors gracefully (optional)
+          }
+        });
+      });
     });
-  });
 </script>
 {% endblock %}

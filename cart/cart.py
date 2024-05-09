@@ -15,13 +15,15 @@ class Cart():
         self.cart = cart
     
     # Function to add product in cart
-    def add(self, product):
+    def add(self, product, quantity):
         product_id = str(product.id)
+        product_qty = str(quantity)
         
         if product_id in self.cart:
             pass
         else:
             self.cart[product_id] = {'price':str(product.price)}
+            self.cart[product_id] = int(product_qty)
         self.session.modified = True
         
     # Function to see quantity of products in the car 
@@ -38,6 +40,34 @@ class Cart():
         
         # Return the lookup products
         return products
+    
+    def get_quants(self):
+        quantities = self.cart
+        return quantities
+    
+    # Function to update product quantity
+    def update(self, product, quantity):
+        product_id = str(product.id)
+
+        # Check if product exists in the cart
+        if product_id in self.cart:
+            self.cart[product_id]['quantity'] = quantity  # Update quantity
+        else:
+        # If product doesn't exist, consider raising an exception or handling it differently
+            raise ValueError(f"Product with ID {product_id} not found in cart.")
+
+        self.session.modified = True  # Mark session as modified
         
-        
-        
+    # Function to calculate total price of all items in cart
+    def get_total_price(self):
+        total_price = 0
+        for item in self.cart.items():
+            product_id, item_data = item
+            product = Product.objects.get(pk=product_id)  # Get product object using ID
+            quantity = int(item_data['quantity'])
+            price = int(product.price)
+            total_price += quantity * price
+        return total_price
+            
+            
+            
