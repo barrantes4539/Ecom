@@ -47,16 +47,27 @@ class Cart():
     
     # Function to update product quantity
     def update(self, product, quantity):
-        product_id = str(product.id)
-
-        # Check if product exists in the cart
-        if product_id in self.cart:
-            self.cart[product_id]['quantity'] = quantity  # Update quantity
-        else:
-        # If product doesn't exist, consider raising an exception or handling it differently
-            raise ValueError(f"Product with ID {product_id} not found in cart.")
-
-        self.session.modified = True  # Mark session as modified
+        try:
+            product_id = str(product)
+            product_qty = int(quantity)
+            
+            # Get cart
+            ourcart = self.cart
+            
+            # Update dict
+            ourcart[product_id] = product_qty
+            
+            # Update session
+            self.session.modified = True
+            
+            thing = self.cart
+            return thing
+            
+        except Exception as e:
+            # Manejo de la excepción
+            print("Error:", e)
+            return None  # o cualquier otro manejo de error que desees hacer
+    
         
     # Function to calculate total price of all items in cart
     def get_total_price(self):
@@ -68,6 +79,13 @@ class Cart():
             price = int(product.price)
             total_price += quantity * price
         return total_price
+    def delete(self, product):
+        product_id = str(product)
+        if product_id in self.cart:
+            del self.cart[product_id]
+        
+        self.session.modified = True
+
             
             
             

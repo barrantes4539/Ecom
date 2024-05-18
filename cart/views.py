@@ -36,48 +36,37 @@ def cart_add(request):
         response = JsonResponse({'qty: ': cart_quantity})
         return response
     
-def cart_delete():
-    pass
+def cart_delete(request):
+    cart = Cart(request)
+    if request.POST.get('action') =='post':
+        product_id = int(request.POST.get('product_id'))
+        
+        cart.delete(product=product_id)
+        response = JsonResponse({'product':product_id})
+        return response
 
 def cart_update(request):
-    """
-    Updates the quantity of a product in the user's cart.
 
-    Expects a POST request with the following data:
-        - product_id: Integer representing the product ID.
-        - quantity: Integer representing the desired quantity for the product.
-
-    Returns a JSON response with:
-        - success: Boolean indicating update success.
-        - message: String message regarding the update.
-        - cart_total: Float representing the updated cart total (optional).
-    """
     if not request.method == 'POST':
         return JsonResponse({'success': False, 'message': 'Invalid request method. Expected POST.'})
 
     # Extract product ID and quantity from request
     product_id = request.POST.get('product_id')
-    quantity = int(request.POST.get('quantity'))
-
-    # Error handling - validate data
-    if not product_id or quantity < 0:
-        return JsonResponse({'success': False, 'message': 'Invalid product ID or quantity.'})
+    product_qty = int(request.POST.get('product_qty'))
 
     try:
         # Get the cart
         cart = Cart(request)
 
         # Get the product
-        product = get_object_or_404(Product, id=product_id)
+        #product = get_object_or_404(Product, id=product_id)
         
 
         # Update cart item quantity
-        cart.update(product, quantity)
-
-        # Calculate updated cart total (optional)
-        cart_total = cart.get_total_price() if hasattr(cart, 'get_total_price') else None
-
-        return JsonResponse({'success': True, 'message': 'Cart updated successfully.', 'cart_total': cart_total})
+        cart.update(product=product_id, quantity=product_qty)
+        response = JsonResponse({'qty':product_qty})
+        return response
+        #return redirect('cart_summary')
 
     except (Product.DoesNotExist, ValueError):
         return JsonResponse({'success': False, 'message': 'Error updating cart item.'})

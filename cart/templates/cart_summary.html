@@ -35,26 +35,29 @@
                             <div class="card-body">
                                 {% if cart_products|length > 0 %}
                                     {% for product in cart_products %}
-                                        <div class="d-flex justify-content-between">
+                                    <div cart-products-row>
+                                       <div class="d-flex justify-content-between">
                                             <div class="d-flex flex-row align-items-center">
-                                                <div>
                                                 <img
                                                     src="{{product.image.url}}"
                                                     class="img-fluid rounded-3" alt="Shopping item" style="width: 65px;">
-                                                </div>
+                                            
                                                 <div class="ms-3" style="margin-right: 5px;">
                                                     <h6>{{product.name}}</h6>
                                                 </div>
                                             </div>
+                                            
+
+                                            
                                             <div class="d-flex flex-row align-items-center">
                                                 <div style="width: 60px; margin-right: 15px;">
-                                                  <select class="form-select-sm quantity-select" data-product-id="{{ product.id }}">
+                                                  <select class="form-select-sm quantity-select"
+                                                   data-product-id="{{ product.id }}" id="select{{product.id}}">
                                                         {% for key, value in quantities.items %}
                                                           {% if key == product.id|slugify %}
-                                                          <option selected value="{{ value }}">{{ value }}</option>
+                                                          <option selected>{{ value }}</option>
                                                           {% endif %}
                                                         {% endfor %}
-                                                        <option value="1">1</option>
                                                         <option value="2">2</option>
                                                         <option value="3">3</option>
                                                         <option value="4">4</option>
@@ -62,13 +65,17 @@
                                                         <option value="6">6</option>
                                                     </select>
                                                 </div>
-                                                <div style="width: 80px;">
-                                                  <h6 class="mb-0 product-price" id="product-price" data-product-price="{{product.price}}">{{product.price}}</h6>
+                                                <div style="width: 100%;">
+                                                  {% comment %} <h6 class="mb-0 product-price" id="product-price" data-product-price="{{product.price}}">{{product.price}}</h6> {% endcomment %}
+                                                  <button type="button" data-index="{{ product.id }}" class="mb-0 btn btn-secondary bg-danger delete-product">
+                                                    <i class='bx bx-trash'></i> <!-- Icono de eliminar -->
+                                                  </button>
                                                   <h6 class="mb-0 product-id" data-product-id="{{product.id}}" hidden></h6>
                                                 </div>
                                                 <a href="#!" style="color: #cecece;"><i class="fas fa-trash-alt"></i></a>
                                             </div>
                                         </div>
+                                      </div>
                                     {% endfor %}
                                 {% else %}
                                     <p>Tu carrito está vacío.</p>
@@ -169,51 +176,64 @@
     document.getElementById('btnBuy').addEventListener('click', function () {
         document.getElementById('buyDetailsModal').style.display = 'block';
     });
-    $(document).ready(function() {
-      $('.quantity-select').on('change', function() {
-        var productId = $(this).data('product-id');
-        var quantity = parseInt($(this).val());
-    
-        if (isNaN(quantity)) {
-          console.error('Invalid quantity value.');
-          return; // Exit if quantity is invalid
+
+    $('.quantity-select').on('change', function() {
+      var productId = $(this).data('product-id');
+      var quantity = parseInt($(this).val());
+      
+      if (isNaN(quantity)) {
+        console.error('Invalid quantity value.');
+        return; // Exit if quantity is invalid
+      }
+      console.log(quantity)
+      
+      // Agregamos el debugger aquí
+      debugger;
+      
+      $.ajax({
+        url: '{% url 'cart_update' %}', // Replace with your cart update endpoint
+        type: 'POST',
+        data: {
+          product_id: productId,
+          product_qty: quantity,
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          action: 'post'
+        },
+        
+        success: function(data) {
+          
+          // Handle successful cart update on the server (optional)
+          //document.getElementById("cart_quantity").textContent = json.qty
+          console.log('Cart updated successfully on server:', data);
+          location.reload();
+          
+        },
+        error: function(xhr, status, error) {
+          console.error('Error updating cart on server:', error);
+          // Handle potential server errors gracefully (optional)
         }
-    
-        var priceText = parseInt($(this).closest('.d-flex.justify-content-between').find('.product-price').data('product-price'));
-        console.log(priceText)
-        if (!priceText) {
-          console.error('Product price not found.');
-          return; // Handle missing price scenario (e.g., display error message)
-        }
-        if (isNaN(priceText)) {
-          console.log(priceText)
-          console.error('Error retrieving product price.');
-          return; // Exit if price retrieval fails
-        }
-    
-        var product_price = quantity * parseInt(priceText);
-        console.log(product_price)
-        //$('#product-price').text(product_price);
-        $(this).closest('.d-flex.justify-content-between').find('.product-price').text(product_price);        
-        // Example AJAX call to update server-side cart (replace with your implementation)
-        $.ajax({
-          url: '{% url 'cart_update' %}', // Replace with your cart update endpoint
-          type: 'POST',
-          data: {
-            productId: productId,
-            quantity: quantity,
-            csrfmiddlewaretoken: '{{ csrf_token }}'
-          },
-          success: function(data) {
-            // Handle successful cart update on the server (optional)
-            console.log('Cart updated successfully on server:', data);
-          },
-          error: function(xhr, status, error) {
-            console.error('Error updating cart on server:', error);
-            // Handle potential server errors gracefully (optional)
-          }
-        });
       });
+    });
+    $(document).on('click', '.delete-product', function(e){
+      e.preventDefault();
+      //grab the product id
+      //var productId = $(this).data('index');
+
+      $.ajax({
+        type: 'POST',
+        url: '{% url 'cart_delete' %}',
+        data: {
+          product_id: $(this).data('index'),
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          action: 'post'
+        },
+        success: function(json){
+          location.reload();
+        },
+        error: function(xhr, errmsj, err){
+
+        }
+      })
     });
 </script>
 {% endblock %}
