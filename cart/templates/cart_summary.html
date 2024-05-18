@@ -62,6 +62,7 @@
                                                           <option selected>{{ value }}</option>
                                                           {% endif %}
                                                         {% endfor %}
+                                                        <option value="1">1</option>
                                                         <option value="2">2</option>
                                                         <option value="3">3</option>
                                                         <option value="4">4</option>
@@ -71,7 +72,7 @@
                                                 </div>
                                                 <div style="width: 100%;">
                                                   <button type="button" data-index="{{ product.id }}" class="mb-0 btn btn-secondary bg-danger delete-product">
-                                                    <i class='bx bx-trash'></i> <!-- Icono de eliminar -->
+                                                    <i class='bx bx-trash'></i>
                                                   </button>
                                                   <h6 class="mb-0 product-id" data-product-id="{{product.id}}" hidden></h6>
                                                 </div>
@@ -80,6 +81,8 @@
                                         </div>
                                       </div>
                                     {% endfor %}
+                                    <strong style="font-size: 20px;">Total: ₡{{ totals }}</strong> 
+                                    <br><br><br>
                                 {% else %}
                                     <p>Tu carrito está vacío.</p>
                                 {% endif %}
@@ -88,14 +91,10 @@
                                         <span>Comprar<i class="fas fa-long-arrow-alt-right ms-2 align-items-center"></i></span>
                                     </div>
                                 </button>
-                              
                             </div>
                           </div>
-          
                         </div>
-                       
-          
-                          <div class="card bg-primary text-white rounded-3" id="buyDetailsModal" style="display: none;">
+                          {% comment %} <div class="card bg-primary text-white rounded-3" id="buyDetailsModal" style="display: none;">
                             <div class="card-body">
                               <div class="d-flex justify-content-between align-items-center mb-4">
                                 <h5 class="mb-0">Detalles de Compra</h5>
@@ -146,7 +145,7 @@
                               <div class="d-flex justify-content-between">
                                 <p class="mb-2">Envío</p>
                                 <p class="mb-2">$20.00</p>
-                              </div>
+                              </div> 
           
                               <div class="d-flex justify-content-between mb-4">
                                 <p class="mb-2">Total</p>
@@ -160,10 +159,7 @@
                               </button>
           
                             </div>
-                          </div>
-          
-                        
-          
+                          </div> {% endcomment %}
                       </div>
           
                     </div>
@@ -191,7 +187,7 @@
       console.log(quantity)
       
       // Agregamos el debugger aquí
-      debugger;
+      //debugger;
       
       $.ajax({
         url: '{% url 'cart_update' %}', // Replace with your cart update endpoint
