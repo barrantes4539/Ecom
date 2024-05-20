@@ -68,7 +68,7 @@ class Cart():
     def cart_total(self):
         '''
         This is how actually elemets are seing in the dictionary
-        {'4':3, '2':4} '4' is the id and 3 is the quantity
+        {'4':3, '2':4} '4' is the id and 3 is the quantity (investigar comando para depurar sesion en terminal de python)
         '''
         #Get products ids
         product_ids = self.cart.keys()
@@ -86,7 +86,7 @@ class Cart():
                     if product.is_sale:
                         total = total + (product.sale_price * value)
                     else:
-                        total = total + (product.price * value)
+                        total = total + (product.sale_price * value)
         return total
 
             
