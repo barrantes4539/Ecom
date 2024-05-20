@@ -4,8 +4,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .forms import SignUpForm
+from .forms import SignUpForm, UpdateUserForm
 from django import forms
+from django.contrib.auth.decorators import login_required
 
 
 #Store views
@@ -72,6 +73,14 @@ def register_user(request):
     else:    
         return render(request, 'register.html', {'form':form})
 
+@login_required
 def user_profile(request):
-    return render(request, 'user_profile.html', {})
+    if request.method == 'POST':
+        form = UpdateUserForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('user.profile.html')  # Redirigir a alguna vista de perfil o de éxito
+    else:
+        form = UpdateUserForm(instance=request.user)
+    return render(request, 'user_profile.html', {'user_form': form})
 
