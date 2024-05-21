@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .forms import SignUpForm, UpdateUserForm
 from django import forms
-from django.contrib.auth.decorators import login_required
 
 
 #Store views
@@ -73,13 +72,15 @@ def register_user(request):
     else:    
         return render(request, 'register.html', {'form':form})
 
-@login_required
+
 def user_profile(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
     if request.method == 'POST':
         form = UpdateUserForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            return redirect('user.profile.html')  # Redirigir a alguna vista de perfil o de éxito
+            messages.success(request, ("Tu perfil ha sido actualizado exitosamente!!"))
     else:
         form = UpdateUserForm(instance=request.user)
     return render(request, 'user_profile.html', {'user_form': form})
