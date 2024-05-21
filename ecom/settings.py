@@ -131,5 +131,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #NOTES
+#User 
+#Barrantes
+#root1234
+
+#Admin
+#root
 #root1234
 #git config --global core.autocrlf true

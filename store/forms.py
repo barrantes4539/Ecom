@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm, SetPasswordForm
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Correo Electrónico'}))
@@ -44,3 +44,20 @@ class UpdateUserForm(UserChangeForm):
         self.fields['username'].widget.attrs['placeholder'] = 'Nombre de Usuario'
         self.fields['username'].label = ''
         self.fields['username'].help_text = None  # Remove help text
+        
+class ChangePasswordForm(SetPasswordForm):
+    class Meta:
+        model = User
+        fields = ['new_password1', 'new_password2']
+    def __init__(self, *args, **kwargs):
+        super(ChangePasswordForm, self).__init__(*args, **kwargs)
+
+        self.fields['new_password1'].widget.attrs['class'] = 'form-control'
+        self.fields['new_password1'].widget.attrs['placeholder'] = 'Contraseña'
+        self.fields['new_password1'].label = ''
+        self.fields['new_password1'].help_text = '<ul class="form-text text-muted small"><li>Su contraseña no puede ser similar a su otra información personal.</li><li>Su contraseña debe contener al menos 8 caracteres.</li><li>Su contraseña no puede ser una contraseña de uso común.</li><li>Su contraseña no puede ser enteramente numérica.</li></ul>'
+
+        self.fields['new_password2'].widget.attrs['class'] = 'form-control'
+        self.fields['new_password2'].widget.attrs['placeholder'] = 'Confirmar contraseña.'
+        self.fields['new_password2'].label = ''
+        self.fields['new_password2'].help_text = '<span class="form-text text-muted"><small>Ingrese su contraseña nuevamente.</small></span>'

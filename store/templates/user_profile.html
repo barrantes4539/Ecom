@@ -26,7 +26,8 @@
                         </div>
                     </div>
                     <button id="confirmBtn" type="submit" class="btn btn-success" style="display: none;">Confirmar Cambios</button>
-                    <button id="cancelBtn" type="button" class="btn btn-outline-primary ms-1" style="display: none;">Cancelar</button>
+                    <a id="passBtn" href="{% url 'update_password' %}" class="btn btn-primary text-white" style="display: none;">Cambiar Contraseña</a>
+                    <button id="cancelBtn" type="button" class="btn btn-outline-secondary ms-1 mt-2" style="display: none;">Cancelar</button>
                 </form>
             </div>
         </div>
@@ -41,7 +42,8 @@
 
         // Mostrar botones de Confirmar y Cancelar
         document.getElementById('confirmBtn').style.display = 'inline-block';
-        document.getElementById('cancelBtn').style.display = 'inline-block';
+        document.getElementById('cancelBtn').style.display = 'block';
+        document.getElementById('passBtn').style.display = 'inline-block';
     });
 
     document.getElementById('cancelBtn').addEventListener('click', function () {

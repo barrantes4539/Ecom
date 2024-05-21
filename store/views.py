@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .forms import SignUpForm, UpdateUserForm
+from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm
 from django import forms
 
 
@@ -32,6 +32,7 @@ def category(request, cat):
     except:
         messages.success(request, ('La categoría no existe.'))
         return redirect('home')
+    
 #Authentication
 def login_user(request):
     if request.method == "POST":
@@ -84,4 +85,28 @@ def user_profile(request):
     else:
         form = UpdateUserForm(instance=request.user)
     return render(request, 'user_profile.html', {'user_form': form})
+
+def update_password(request):
+    if request.user.is_authenticated:
+        current_user = request.user
+        
+        if request.method == 'POST':
+            form = ChangePasswordForm(current_user, request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Has cambiado la contraseña exitosamente")
+                login(request, current_user)
+                return redirect('user_profile')
+            else:
+                for error in list(form.errors.values()):
+                    messages.error(request, error)
+                    return redirect('update_password')
+        else:
+            form = ChangePasswordForm(current_user)
+            return render(request, 'update_password.html', {'form': form})
+    else:
+        messages.success(request, ("Debes iniciar sesión primero"))
+        return redirect('login')
+    
+
 
