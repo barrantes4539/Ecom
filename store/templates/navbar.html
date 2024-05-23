@@ -16,7 +16,6 @@
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="{% url 'home' %}">Todos los productos</a></li>
                         <li><hr class="dropdown-divider" /></li>
-                        {% comment %} Objetivo: mostrar las categorias por medio de un for {% endcomment %}
                         {% for category in categories %}
                             <li><a class="dropdown-item" href="{% url 'category' category.name %}">{{ category.name }}</a></li>
                         {% endfor %}
@@ -24,8 +23,16 @@
                     </ul>
                 </li>
                 {% if user.is_authenticated %}
-                <li class="nav-item"><a class="nav-link" href="{% url 'user_profile' %}">Mi Perfil</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Cerrar Sesión</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bx bx-user"></i>
+                        </a>                        
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'user_profile' %}">Mi Perfil</a></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar Sesión</a></li>
+                            <li><hr class="dropdown-divider" /></li>
+                        </ul>
+                    </li>
                 {% else %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Regístrate</a></li>

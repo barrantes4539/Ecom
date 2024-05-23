@@ -1,14 +1,14 @@
 from django.shortcuts import render, redirect
-from .models import Product, Category
+from .models import Product, Category, Profile
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm
+from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, UserInfoForm
 from django import forms
 
 
-#Store views
+#Store
 def home(request):
     products = Product.objects.all()
     return render(request, 'home.html', {'products':products})
@@ -73,18 +73,29 @@ def register_user(request):
     else:    
         return render(request, 'register.html', {'form':form})
 
+# User
+def user_info(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    current_user = Profile.objects.get(user__id=request.user.id)
+    form = UserInfoForm(request.POST or None, instance=current_user)
+    if form.is_valid():
+        form.save()
+        messages.success(request, ("Tu información ha sido actualizada exitosamente!!"))
+        return redirect('user_profile')
+    return render(request, 'user_info.html', {'form': form})
 
 def user_profile(request):
     if not request.user.is_authenticated:
         return redirect('login')
     if request.method == 'POST':
-        form = UpdateUserForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
+        user_form = UpdateUserForm(request.POST, instance=request.user)
+        if user_form.is_valid():
+            user_form.save()
             messages.success(request, ("Tu perfil ha sido actualizado exitosamente!!"))
     else:
-        form = UpdateUserForm(instance=request.user)
-    return render(request, 'user_profile.html', {'user_form': form})
+        user_form = UpdateUserForm(instance=request.user)
+    return render(request, 'user_profile.html', {'user_form': user_form})
 
 def update_password(request):
     if request.user.is_authenticated:

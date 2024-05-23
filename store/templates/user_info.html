@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<section style="background-color: #eee;">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <form id="userForm" method="POST" action="{% url 'user_info' %}">
+                    {% csrf_token %}
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <p></p>
+                            {{ form.as_p }}
+                        </div>
+                    </div>
+                    <button id="confirmBtn" type="submit" class="btn btn-success">Confirmar Cambios</button>
+                    <a id="cancelBtn" href="{% url 'user_profile' %}" class="btn btn-outline-secondary ms-1">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

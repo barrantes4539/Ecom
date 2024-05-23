@@ -11,7 +11,8 @@
                         <h5 class="my-3">{{ user.first_name }} {{ user.last_name }}</h5>
                         <p class="text-muted mb-1">{{ user.get_username }}</p>
                         <div class="d-flex justify-content-center mb-2">
-                            <button id="editProfileBtn" type="button" class="btn btn-primary">Editar Perfil</button>
+                            <button id="editProfileBtn" type="button" class="btn btn-primary me-2">Editar Perfil</button>
+                            <a href="{% url 'user_info' %}" class="btn btn-info">Editar Información</a>
                         </div>
                     </div>
                 </div>
@@ -22,6 +23,7 @@
                     {% csrf_token %}
                     <div class="card mb-4">
                         <div class="card-body">
+                            <p></p>
                             {{ user_form.as_p }}
                         </div>
                     </div>
@@ -55,6 +57,7 @@
         // Ocultar botones de Confirmar y Cancelar
         document.getElementById('confirmBtn').style.display = 'none';
         document.getElementById('cancelBtn').style.display = 'none';
+        document.getElementById('passBtn').style.display = 'none';
     });
 
     // Desactivar los campos inicialmente

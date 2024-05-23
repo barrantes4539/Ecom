@@ -1,11 +1,12 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm, SetPasswordForm
+from .models import Profile
 
 class SignUpForm(UserCreationForm):
-    email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Correo Electrónico'}))
-    first_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Nombre'}))
-    last_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Apellidos'}))
+    email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Correo Electrónico'}), required=True)
+    first_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Nombre'}), required=True)
+    last_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Apellidos'}), required=True)
 
     class Meta:
         model = User
@@ -30,9 +31,9 @@ class SignUpForm(UserCreationForm):
 
 class UpdateUserForm(UserChangeForm):
     password = None  # Remove the password field
-    email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Correo Electrónico'}))
-    first_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Nombre'}))
-    last_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Apellidos'}))
+    email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Correo Electrónico'}), required=False)
+    first_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Nombre'}), required=False)
+    last_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Apellidos'}), required=False)
 
     class Meta:
         model = User
@@ -61,3 +62,16 @@ class ChangePasswordForm(SetPasswordForm):
         self.fields['new_password2'].widget.attrs['placeholder'] = 'Confirmar contraseña.'
         self.fields['new_password2'].label = ''
         self.fields['new_password2'].help_text = '<span class="form-text text-muted"><small>Ingrese su contraseña nuevamente.</small></span>'
+
+class UserInfoForm(forms.ModelForm):
+    phone = forms.CharField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Teléfono'}), required=False)
+    address = forms.CharField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Dirección'}), required=False)
+    address2 = forms.CharField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Dirección 2'}), required=False)
+    city = forms.CharField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Ciudad'}), required=False)
+    state = forms.CharField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Provincia'}), required=False)
+    zipcode = forms.CharField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Código zip'}), required=False)
+    country = forms.CharField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'País'}), required=False)
+    
+    class Meta:
+        model = Profile
+        fields = ('phone', 'address', 'address2', 'city', 'state', 'zipcode', 'country')
