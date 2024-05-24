@@ -66,10 +66,17 @@ def register_user(request):
             user = authenticate(username=username, password=password)
             login(request, user)
             messages.success(request, ("Has sido registrado exitosamente!!"))
-            return redirect('home')
+            return redirect('user_info')
         else:
-            messages.success(request, ("Ha habido un error registrando su cuenta, intente de nuevo"))
+            # Collect form errors and display them
+            error_messages = form.errors.as_data()
+            for field, errors in error_messages.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error.message}")
+
+            messages.error(request, "Ha habido un error registrando su cuenta, intente de nuevo")
             return redirect('register')
+
     else:    
         return render(request, 'register.html', {'form':form})
 
@@ -82,7 +89,7 @@ def user_info(request):
     if form.is_valid():
         form.save()
         messages.success(request, ("Tu información ha sido actualizada exitosamente!!"))
-        return redirect('user_profile')
+        return redirect('home')
     return render(request, 'user_info.html', {'form': form})
 
 def user_profile(request):

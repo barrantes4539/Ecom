@@ -22,7 +22,7 @@ class SignUpForm(UserCreationForm):
         self.fields['password1'].widget.attrs['class'] = 'form-control'
         self.fields['password1'].widget.attrs['placeholder'] = 'Contraseña'
         self.fields['password1'].label = ''
-        self.fields['password1'].help_text = '<ul class="form-text text-muted small"><li>Su contraseña no puede ser similar a su otra información personal.</li><li>Su contraseña debe contener al menos 8 caracteres.</li><li>Su contraseña no puede ser una contraseña de uso común.</li><li>Su contraseña no puede ser enteramente numérica.</li></ul>'
+        self.fields['password1'].help_text = '<ul class="form-text text-muted small"><li>Su contraseña debe contener al menos 8 caracteres.</li><li>Su contraseña no puede ser una contraseña de uso común.</li><li>Su contraseña no puede ser enteramente numérica.</li></ul>'
 
         self.fields['password2'].widget.attrs['class'] = 'form-control'
         self.fields['password2'].widget.attrs['placeholder'] = 'Confirmar contraseña.'
@@ -56,7 +56,7 @@ class ChangePasswordForm(SetPasswordForm):
         self.fields['new_password1'].widget.attrs['class'] = 'form-control'
         self.fields['new_password1'].widget.attrs['placeholder'] = 'Contraseña'
         self.fields['new_password1'].label = ''
-        self.fields['new_password1'].help_text = '<ul class="form-text text-muted small"><li>Su contraseña no puede ser similar a su otra información personal.</li><li>Su contraseña debe contener al menos 8 caracteres.</li><li>Su contraseña no puede ser una contraseña de uso común.</li><li>Su contraseña no puede ser enteramente numérica.</li></ul>'
+        self.fields['new_password1'].help_text = '<ul class="form-text text-muted small"><li>Su contraseña debe contener al menos 8 caracteres.</li><li>Su contraseña no puede ser una contraseña de uso común.</li><li>Su contraseña no puede ser enteramente numérica.</li></ul>'
 
         self.fields['new_password2'].widget.attrs['class'] = 'form-control'
         self.fields['new_password2'].widget.attrs['placeholder'] = 'Confirmar contraseña.'

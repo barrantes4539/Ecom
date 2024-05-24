@@ -12,8 +12,10 @@
                             {{ form.as_p }}
                         </div>
                     </div>
-                    <button id="confirmBtn" type="submit" class="btn btn-success">Confirmar Cambios</button>
-                    <a id="cancelBtn" href="{% url 'user_profile' %}" class="btn btn-outline-secondary ms-1">Cancelar</a>
+                    <div class="text-center">
+                        <button id="confirmBtn" type="submit" class="btn btn-success">Confirmar Cambios</button>
+                        <a id="cancelBtn" href="{% url 'home' %}" class="btn btn-outline-secondary ms-1">Cancelar</a>
+                    </div>
                 </form>
             </div>
         </div>
