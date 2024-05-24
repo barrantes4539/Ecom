@@ -125,6 +125,18 @@ def update_password(request):
     else:
         messages.success(request, ("Debes iniciar sesión primero"))
         return redirect('login')
-    
+
+# Customer
+# def search(request):
+#     if request.method == "POST":
+#         searched = request.POST['searched'] 
+#         searched = Product.objects.filter(name__icontains=searched)
+#         if not searched:
+#             messages.success(request, ("El producto no existe."))
+#         return render(request, "search.html", {'searched':searched})
+#     else:
+#         return render(request, "search.html", {})
+        
+        
 
 

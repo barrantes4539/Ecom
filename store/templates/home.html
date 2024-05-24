@@ -15,7 +15,10 @@
     <div class="container px-4 px-lg-5 mt-5">
         <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
             <div class="input-group mb-3 mt-4">
-                <input type="text" id="searchInput" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar..." aria-label="Search" aria-describedby="basic-addon2">
+            </div>
+            <div id="noProductsMessage" class="col-12 text-center" style="display: none;">
+                <p>No existe el producto buscado</p>
             </div>
             {% for product in products %}
             <div class="col mb-5 product-item">
@@ -58,17 +61,27 @@
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('searchInput');
         const productItems = document.querySelectorAll('.product-item');
+        const noProductsMessage = document.getElementById('noProductsMessage');
 
         searchInput.addEventListener('input', function() {
             const filter = searchInput.value.toLowerCase();
+            let hasVisibleProducts = false;
+
             productItems.forEach(function(item) {
                 const productName = item.querySelector('.fw-bolder').textContent.toLowerCase();
                 if (productName.includes(filter)) {
                     item.style.display = '';
+                    hasVisibleProducts = true;
                 } else {
                     item.style.display = 'none';
                 }
             });
+
+            if (hasVisibleProducts) {
+                noProductsMessage.style.display = 'none';
+            } else {
+                noProductsMessage.style.display = 'block';
+            }
         });
     });
 </script>
