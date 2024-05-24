@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, UserInfoForm
 from django import forms
+import json
+from cart.cart import  Cart
 
 
 #Store
@@ -41,6 +43,20 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request,user)
+            current_user = Profile.objects.get(user__id=request.user.id)
+            # Get the save cart (old_cart) from database
+            saved_cart = current_user.old_cart
+            # Convert database string to python dictionary
+            if saved_cart:
+                # Convert to dictionary using JSON
+                converted_cart = json.loads(saved_cart)
+                # Add the loaded cart dictionary to our session
+                cart = Cart(request)
+                #Loop through the cart and add the items from the database
+                for key,value in converted_cart.items():
+                    cart.db_add(product=key, quantity=value)
+            
+            
             messages.success(request, ("Has iniciado Sesión"))
             return redirect('home')
         else:
