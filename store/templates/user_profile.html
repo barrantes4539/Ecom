@@ -7,8 +7,8 @@
             <div class="col-lg-4">
                 <div class="card mb-4">
                     <div class="card-body text-center">
-                        {% if customer.user_img %}
-                            <img src="{{ customer.user_img.url }}" alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
+                        {% if profile.user_img %}
+                            <img src="{{ profile.user_img.url }}" alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
                         {% else %}
                             <img src="{% static 'img/profile/avatar.png' %}" alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
                         {% endif %}
