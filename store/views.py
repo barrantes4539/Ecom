@@ -5,6 +5,8 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, UserInfoForm
+from payment.forms import ShippingForm
+from payment.models import ShippingAddress
 from django import forms
 import json
 from cart.cart import  Cart
@@ -100,13 +102,22 @@ def register_user(request):
 def user_info(request):
     if not request.user.is_authenticated:
         return redirect('login')
+    #Get current User
     current_user = Profile.objects.get(user__id=request.user.id)
+    #Get current User's Shipping Info
+    shipping_user = ShippingAddress.objects.get(user__id=request.user.id)
+    #Get original User Form
     form = UserInfoForm(request.POST or None, instance=current_user)
-    if form.is_valid():
+    #Get User Shipping Form
+    shipping_form = ShippingForm(request.POST or None, instance=shipping_user)
+    if form.is_valid() or shipping_form.is_valid():
+        #Save Original form
         form.save()
+        #Save shipping form
+        shipping_form.save()
         messages.success(request, ("Tu información ha sido actualizada exitosamente!!"))
         return redirect('home')
-    return render(request, 'user_info.html', {'form': form})
+    return render(request, 'user_info.html', {'form': form, 'shipping_form': shipping_form})
 
 def user_profile(request):
     if not request.user.is_authenticated:
