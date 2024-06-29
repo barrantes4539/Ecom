@@ -6,9 +6,6 @@ from django.contrib import messages
 
 
 def cart_summary(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-
     # Get the cart
     cart = Cart(request)
     cart_products = cart.get_products
@@ -19,8 +16,6 @@ def cart_summary(request):
 def cart_add(request):
     # Ensure the request is a POST request and the action is 'post'
     if request.method == "POST" and request.POST.get('action') == 'post':
-        if not request.user.is_authenticated:
-            return JsonResponse({'unauthorized': 'User not authenticated'}, status=401)
 
         # Get the cart
         cart = Cart(request)

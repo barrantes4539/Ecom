@@ -79,15 +79,15 @@
                                       </div>
                                     {% endfor %}
                                     <br>
-                                    <strong style="font-size: 20px;">Total: ₡{{ totals }}</strong> 
+                                    <div align="right">
+                                      <strong style="font-size: 20px;">Total: ₡{{ totals }}</strong> 
+                                      <a href="{% url 'checkout' %}" class="btn btn-success">Checkout</a>
+                                    </div>
                                     <br><br><br>
                                 {% else %}
                                     <p>Tu carrito está vacío.</p>
                                 {% endif %}
-                                
-                                <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary" id="btnBuy">
-                                        <span>Comprar</span>
-                                </button>
+           
                             </div>
                           </div>
                         </div>
@@ -103,9 +103,7 @@
 
     
 <script>
-    document.getElementById('btnBuy').addEventListener('click', function () {
-        document.getElementById('buyDetailsModal').style.display = 'block';
-    });
+
 
     $('.quantity-select').on('change', function() {
       var productId = $(this).data('product-id');
