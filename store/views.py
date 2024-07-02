@@ -28,44 +28,91 @@ def category(request, cat):
     #Grab the category from the url
     print(f"Received category: {cat}")
     try:
+        
         # Look up the category
         category = Category.objects.get(name=cat)
         print(f"URL category: {category}")
+        
+        # Look up the product filtered by category
         products = Product.objects.filter(category=category)
+        
         return render(request, 'category.html', {'products':products,'category':category})
     except:
         messages.success(request, ('La categoría no existe.'))
         return redirect('home')
     
 #Authentication
+# def login_user(request):
+#     if request.method == "POST":
+#         username = request.POST['username']
+#         password = request.POST['password']
+#         user = authenticate(request, username=username, password=password)
+#         if user is not None:
+#             login(request,user)
+#             current_user = Profile.objects.get(user__id=request.user.id)
+#             # Get the save cart (old_cart) from database
+#             saved_cart = current_user.old_cart
+#             # Convert database string to python dictionary
+#             if saved_cart:
+#                 # Convert to dictionary using JSON
+#                 converted_cart = json.loads(saved_cart)
+#                 # Add the loaded cart dictionary to our session
+#                 cart = Cart(request)
+#                 #Loop through the cart and add the items from the database
+#                 for key,value in converted_cart.items():
+#                     cart.db_add(product=key, quantity=value)
+            
+            
+#             messages.success(request, ("Has iniciado Sesión"))
+#             return redirect('home')
+#         else:
+#             messages.success(request, ("Ha habido un error, intente de nuevo"))
+#             return redirect('login')
+#     else:
+#         return render(request, 'login.html', {})
+
 def login_user(request):
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            login(request,user)
-            current_user = Profile.objects.get(user__id=request.user.id)
-            # Get the save cart (old_cart) from database
-            saved_cart = current_user.old_cart
-            # Convert database string to python dictionary
-            if saved_cart:
-                # Convert to dictionary using JSON
-                converted_cart = json.loads(saved_cart)
-                # Add the loaded cart dictionary to our session
-                cart = Cart(request)
-                #Loop through the cart and add the items from the database
-                for key,value in converted_cart.items():
-                    cart.db_add(product=key, quantity=value)
+            login(request, user)
             
+            try:
+                # Retrieve the profile for the logged-in user
+                current_user_profile = Profile.objects.get(user=user)
+                
+                # Get the saved cart (old_cart) from database
+                saved_cart = current_user_profile.old_cart
+                
+                if saved_cart:
+                    try:
+                        # Convert database string to Python dictionary
+                        converted_cart = json.loads(saved_cart)
+                        
+                        # Add the loaded cart items to the current session cart
+                        cart = Cart(request)
+                        for key, value in converted_cart.items():
+                            cart.db_add(product=key, quantity=value)
+                        
+                        messages.success(request, "Has iniciado sesión")
+                    except json.JSONDecodeError:
+                        messages.error(request, "Error al cargar el carrito guardado")
+                else:
+                    messages.info(request, "Agrega productos a tu carrito!!")
+                
+                return redirect('home')
             
-            messages.success(request, ("Has iniciado Sesión"))
-            return redirect('home')
+            except Profile.DoesNotExist:
+                messages.error(request, "No se encontró el perfil asociado con su cuenta")
+                return redirect('login')
+            
         else:
-            messages.success(request, ("Ha habido un error, intente de nuevo"))
+            messages.error(request, "Usuario o contraseña incorrectos")
             return redirect('login')
-    else:
-        return render(request, 'login.html', {})
+    
+    return render(request, 'login.html', {})
 
 def logout_user(request):
     logout(request)
