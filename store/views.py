@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Category, Profile
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -10,7 +10,40 @@ from payment.models import ShippingAddress
 from django import forms
 import json
 from cart.cart import  Cart
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 
+
+#Admin
+def admin_categories(request):
+    if request.user.is_authenticated and request.user.is_superuser:
+        
+        categories = Category.objects.all()
+        return render(request, 'admin_categories.html', {'categories':categories})
+    else:
+        messages.success(request, "Access Denied")
+        return redirect('home')
+    
+@require_POST
+def update_categories(request):
+    # Ensure the action is 'post'
+    if request.POST.get('action') == 'post':
+        # Get the category ID and the category name from POST data
+        category_id = int(request.POST.get('category_id'))
+        category_name = request.POST.get('category_name')
+
+        # Update the category name in the database
+        try:
+            category = Category.objects.get(id=category_id)
+            category.name = category_name
+            category.save()
+            return JsonResponse({'message': f"Categoría '{category_name}' actualizada correctamente."})
+        except Category.DoesNotExist:
+            return JsonResponse({'error': 'La categoría especificada no existe.'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 #Store
 def home(request):
@@ -41,35 +74,6 @@ def category(request, cat):
         messages.success(request, ('La categoría no existe.'))
         return redirect('home')
     
-#Authentication
-# def login_user(request):
-#     if request.method == "POST":
-#         username = request.POST['username']
-#         password = request.POST['password']
-#         user = authenticate(request, username=username, password=password)
-#         if user is not None:
-#             login(request,user)
-#             current_user = Profile.objects.get(user__id=request.user.id)
-#             # Get the save cart (old_cart) from database
-#             saved_cart = current_user.old_cart
-#             # Convert database string to python dictionary
-#             if saved_cart:
-#                 # Convert to dictionary using JSON
-#                 converted_cart = json.loads(saved_cart)
-#                 # Add the loaded cart dictionary to our session
-#                 cart = Cart(request)
-#                 #Loop through the cart and add the items from the database
-#                 for key,value in converted_cart.items():
-#                     cart.db_add(product=key, quantity=value)
-            
-            
-#             messages.success(request, ("Has iniciado Sesión"))
-#             return redirect('home')
-#         else:
-#             messages.success(request, ("Ha habido un error, intente de nuevo"))
-#             return redirect('login')
-#     else:
-#         return render(request, 'login.html', {})
 
 def login_user(request):
     if request.method == "POST":
@@ -200,16 +204,6 @@ def update_password(request):
         messages.success(request, ("Debes iniciar sesión primero"))
         return redirect('login')
 
-# Customer
-# def search(request):
-#     if request.method == "POST":
-#         searched = request.POST['searched'] 
-#         searched = Product.objects.filter(name__icontains=searched)
-#         if not searched:
-#             messages.success(request, ("El producto no existe."))
-#         return render(request, "search.html", {'searched':searched})
-#     else:
-#         return render(request, "search.html", {})
         
         
 
