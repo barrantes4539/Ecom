@@ -20,4 +20,8 @@ urlpatterns = [
     #Admin
     path('admin_categories/', views.admin_categories, name='admin_categories'),
     path('update_categories/', views.update_categories, name='update_categories'),
+    path('add_categories/', views.add_categories, name='add_categories'),
+    path('delete_categories/', views.delete_categories, name='delete_categories'),
+    path('admin_products/', views.admin_products, name='admin_products'),
+    path('update_products/', views.update_products, name='update_products'),
 ]

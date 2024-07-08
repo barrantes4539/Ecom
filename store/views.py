@@ -14,7 +14,9 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 
 
-#Admin
+#ADMIN FUNCTIONS
+
+#Categories
 def admin_categories(request):
     if request.user.is_authenticated and request.user.is_superuser:
         
@@ -22,6 +24,14 @@ def admin_categories(request):
         return render(request, 'admin_categories.html', {'categories':categories})
     else:
         messages.success(request, "Access Denied")
+        return redirect('home')
+#Products
+def admin_products(request):
+    if request.user.is_authenticated and request.user.is_superuser:
+        products = Product.objects.select_related('category').all()
+        categories = Category.objects.all()
+        return render(request, 'admin_products.html', {'products': products, 'categories':categories})
+    else:
         return redirect('home')
     
 @require_POST
@@ -44,6 +54,90 @@ def update_categories(request):
             return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+@require_POST
+def add_categories(request):
+    # Ensure the action is 'post'
+    if request.POST.get('action') == 'post':
+        # Get the category ID and the category name from POST data
+        new_category_name = request.POST.get('new_category_name')
+
+        # Update the category name in the database
+        try:
+            # Create a new Category instance
+            new_category = Category(name=new_category_name)
+            # Save data in the database
+            new_category.save()
+            
+            messages.success(request, "Categoría agregada exitosamente")
+            return JsonResponse({'message': f"Categoría '{new_category_name}' agregada correctamente."})
+        except Category.DoesNotExist:
+            return JsonResponse({'error': 'La categoría especificada no existe.'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+@require_POST
+def delete_categories(request):
+    # Ensure the action is 'post'
+    if request.POST.get('action') == 'post':
+        # Get the category ID and the category name from POST data
+        category_id = int(request.POST.get('category_id'))
+        category_name = request.POST.get('category_name')
+
+        try:
+            # Find the category by ID and delete it
+            category = Category.objects.get(id=category_id)
+            category_name = category.name  # Store category name for response message
+            category.delete()
+            
+            return JsonResponse({'message': f"Categoría '{category_name}' eliminada correctamente."})
+        except Category.DoesNotExist:
+            return JsonResponse({'error': 'La categoría especificada no existe.'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+@require_POST
+def update_products(request):
+    # Asegurarse de que la solicitud sea POST
+    if request.POST.get('action') == 'post':
+        # Obtener los datos del producto del POST
+        product_id = int(request.POST.get('product_id'))
+        product_name = request.POST.get('product_name')
+        product_price = request.POST.get('product_price')
+        product_category_id = request.POST.get('product_category')  # Obtener el ID de la categoría
+        
+        try:
+            # Obtener el producto de la base de datos
+            product = Product.objects.get(id=product_id)
+            product.name = product_name
+            product.price = product_price
+            
+            # Actualizar la categoría solo si se proporcionó un ID válido
+            if product_category_id:
+                product.category_id = int(product_category_id)
+            
+            # Guardar el producto actualizado
+            product.save()
+            
+            return JsonResponse({'message': f"Producto '{product_name}' actualizado correctamente."})
+        
+        except Product.DoesNotExist:
+            return JsonResponse({'error': 'El producto especificado no existe.'}, status=404)
+        
+        except ValueError:
+            return JsonResponse({'error': 'El ID de categoría proporcionado no es válido.'}, status=400)
+        
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Solicitud inválida'}, status=400)
+
+
+#END ADMIN FUNCIONS
 
 #Store
 def home(request):

@@ -12,19 +12,8 @@
               <h5 class="card-title">{{ product.name }}</h5>
               <p class="card-text">{{ product.description }}</p>
 
-              {% if product.is_sale %}
-                <!-- Sale badge -->
-                <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Vendido</div>
-                <!-- Product price-->
-                <strike>₡{{ product.price }}</strike>
-                &nbsp;
-                ₡{{ product.sale_price }}
-              {% else %}
-                <!-- Product price-->
-                <strike>₡{{ product.price }}</strike>
-                &nbsp;
-                ₡{{ product.sale_price }}
-              {% endif %}
+              ₡{{ product.sale_price }}
+              {% comment %} ₡{{ product.sale_price }} {% endcomment %}
               <div class="row justify-content-center">
                 <div class="col-md-2">Cantidad:</div>
                 <div class="col-md-2">

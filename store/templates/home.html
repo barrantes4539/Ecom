@@ -23,10 +23,6 @@
             {% for product in products %}
             <div class="col mb-5 product-item">
                 <div class="card h-100">
-                    {% if product.is_sale %}
-                    <!-- Sale badge-->
-                    <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Vendido</div>
-                    {% endif %}
                     <!-- Product image-->
                     <img class="card-img-top" style="height: 150px; width: 100%;" src="{{product.image.url}}" alt="..." />
                     <!-- Product details-->
@@ -35,13 +31,7 @@
                             <!-- Product name-->
                             <h5 class="fw-bolder">{{ product.name }}</h5>
                             <!-- Product price-->
-                            {% if product.is_sale %}
-                            <strike>₡{{ product.price }}</strike>
-                            &nbsp;
                             ₡{{ product.sale_price }}
-                            {% else %}
-                            {{ product.price }}
-                            {% endif %}
                             <br/>
                             {{ product.description }}
                         </div>
