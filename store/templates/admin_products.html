@@ -21,16 +21,25 @@
                     <tbody>
                         {% for product in products %}
                         <tr>
+
                             <td name="product_img">
-                                <img style="height: 40px; width: 100%;" src="{{product.image.url}}" alt="..." />
+                                <div class="image-container" style="position: relative;">
+                                    <img class="product-image" style="height: 40px; width: 100%;" src="{{ product.image.url }}" alt="...">
+                                    <input type="file" class="product-image-input form-control-file d-none" accept="image/*">
+                                    <label for="product_image_input" class="edit-image btn btn-sm btn-primary d-none" style="position: absolute; top: 0; right: 0;">
+                                        <i class="bx bx-plus"></i>
+                                    </label>
+                                </div>
                             </td>
+                            
+                            
                             <td name="product_name">
                                 <span>{{ product.name }}</span>
                                 <input type="text" id="product_name" name="product_name" class="form-control d-none" value="{{ product.name }}">
                             </td>
                             <td name="product_price">
-                                <span>{{ product.price }}</span>
-                                <input type="text" id="product_price" name="product_price" class="form-control d-none" value="{{ product.price }}">
+                                <span>{{ product.sale_price }}</span>
+                                <input type="text" id="product_price" name="product_price" class="form-control d-none" value="{{ product.sale_price }}">
                             </td>
                             {% comment %} <td name="product_category">
                                 <span>{{ product.category.name }}</span>
@@ -39,7 +48,6 @@
                                     {% for category in categories %}
                                         <li class="dropdown-item"><input type="text" id="product_category" name="product_category" class="form-control d-none" value="{{ product.price }}"></li>
                                     {% endfor %}
-            
                                 </ul>
                             </td> {% endcomment %}
                             <td name="product_category">
@@ -60,7 +68,7 @@
                             <td>
                                 <button class="btn btn-info btn-edit">Editar</button>
                                 <input type="hidden" id="product_id" name="product_id" value="{{ product.id }}">
-                                <button type="button" id="update_product" class="btn btn-success btn-sm btn-confirm d-none" style="margin-right: 4px; margin-bottom: 10px;"><i class='bx bx-check'></i></button>
+                                <button type="button" id="update_product" class="btn btn-success btn-sm btn-confirm d-none" style="margin-right: 4px;"><i class='bx bx-check'></i></button>
                                 <button class="btn btn-sm btn-danger btn-delete d-none" style="margin-right: 4px;"><i class='bx bx-trash'></i></button>
                                 <button class="btn btn-sm btn-outline-secondary btn-cancel d-none" style="margin-top: 10px;">Cancelar</button>
                             </td>
@@ -68,7 +76,7 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                <button type="button" id="add_product" class="btn btn-success btn-add">Añadir</button>
+                <button type="button" id="add_product" class="btn btn-success btn-add">Añadir Producto</button>
             </div>
         </div>
     </div>
@@ -78,27 +86,50 @@
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@fat">Open modal for @fat</button>
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Open modal for @getbootstrap</button> {% endcomment %}
 
+<!-- Modal para agregar producto -->
 <div class="modal fade" id="add_product_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Añadir Categoría</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form>
-          <div class="mb-3">
-            <label for="recipient-name" class="col-form-label">Categoría</label>
-            <input type="text" class="form-control" id="add_product_name">
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-primary" id="confirm_add_product" >Añadir</button>
-      </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Añadir Producto</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="add_product_form" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="add_product_name" class="col-form-label">Nombre</label>
+                        <input type="text" class="form-control" id="add_product_name" name="new_product_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="add_product_price" class="col-form-label">Precio</label>
+                        <input type="number" class="form-control" id="add_product_price" name="new_product_price" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="add_product_category" class="col-form-label">Categoría</label>
+                        <select class="form-select" id="add_product_category" name="new_product_category" required>
+                            <option value="">Seleccionar categoría</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="add_product_description" class="col-form-label">Descripción</label>
+                        <textarea class="form-control" id="add_product_description" name="new_product_description" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="add_product_img" class="col-form-label">Imagen</label>
+                        <input type="file" class="form-control" id="add_product_img" name="new_product_img" accept="image/*" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="confirm_add_product">Añadir</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <div class="modal" id="delete_product_modal" tabindex="-1">
@@ -158,6 +189,7 @@
             var inputPrecio = row.find('td[name="product_price"] input[type="text"]');
             var spanCategoria = row.find('td[name="product_category"] span');
             var dropdownCategoria = row.find('.dropdown');
+            var editImageButton = row.find('.edit-image'); // Selector para el botón de editar imagen
     
             // Ocultar botón Editar y mostrar botón Confirmar
             btnEditar.addClass('d-none');
@@ -175,6 +207,9 @@
             
             spanCategoria.addClass('d-none');
             dropdownCategoria.removeClass('d-none'); // Mostrar el dropdown
+
+            //Mostrar el boton de cambiar imagen
+            editImageButton.removeClass('d-none');
         });
     
         // Evento para el botón Confirmar
@@ -190,6 +225,7 @@
             var inputPrecio = row.find('td[name="product_price"] input[type="text"]');
             var spanCategoria = row.find('td[name="product_category"] span');
             var dropdownCategoria = row.find('.dropdown');
+            var editImageButton = row.find('.edit-image');
             
             // Mostrar botón Editar y ocultar botón Confirmar
             btnEditar.removeClass('d-none');
@@ -206,6 +242,8 @@
             
             spanCategoria.removeClass('d-none');
             dropdownCategoria.addClass('d-none'); // Mostrar el dropdown
+
+            editImageButton.addClass('d-none');
         });
 
         // Evento para el botón Cancelar
@@ -221,6 +259,7 @@
             var inputPrecio = row.find('td[name="product_price"] input[type="text"]');
             var spanCategoria = row.find('td[name="product_category"] span');
             var dropdownCategoria = row.find('.dropdown');
+            var editImageButton = row.find('.edit-image');
             
             // Mostrar botón Editar y ocultar botón Confirmar
             btnEditar.removeClass('d-none');
@@ -237,10 +276,11 @@
             // Mostrar input para editar categoría y ocultar span y dropdown
             spanCategoria.removeClass('d-none');
             dropdownCategoria.addClass('d-none'); // Mostrar el dropdown
+
+            editImageButton.addClass('d-none');
         });
-    
-        // Evento para actualizar categoría
-// Evento para actualizar producto
+
+    // Evento para actualizar el producto
         $(document).on('click', '#update_product', function(e) {
             e.preventDefault();
 
@@ -249,18 +289,30 @@
             var productName = row.find('#product_name').val();
             var productPrice = row.find('#product_price').val();
             var productCategory = row.find('td[name="product_category"] .nav-link').attr('data-category-id'); // Obtener el ID de la categoría seleccionada
+            var productImage = row.find('.product-image-input').prop('files')[0]; // Obtener la imagen seleccionada
 
+            console.log('Product ID:', productId);
+            console.log('Product Name:', productName);
+            console.log('Product Price:', productPrice);
+            console.log('Product Category ID:', productCategory);
+            console.log('Product Image:', productImage);
+
+            var formData = new FormData();
+            formData.append('product_id', productId);
+            formData.append('product_name', productName);
+            formData.append('product_price', productPrice);
+            formData.append('product_category', productCategory);
+            formData.append('product_image', productImage); // Agregar la imagen al FormData
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+            formData.append('action', 'post');
+
+            // Enviar la solicitud POST al servidor
             $.ajax({
                 type: 'POST',
                 url: '{% url 'update_products' %}',
-                data: {
-                    product_id: productId,
-                    product_name: productName,
-                    product_price: productPrice,
-                    product_category: productCategory, // Incluir el ID de la categoría
-                    csrfmiddlewaretoken: '{{ csrf_token }}',
-                    action: 'post'
-                },
+                data: formData,
+                processData: false,
+                contentType: false,
                 success: function(response) {
                     if (response && response.message) {
                         swal("Éxito", response.message, "success")
@@ -268,10 +320,7 @@
                                 window.location.reload(); // Recargar la página después de añadir la categoría
                             });
                     } else {
-                        swal("Éxito", "Producto agregada exitosamente", "success")
-                            .then(function() {
-                                window.location.reload(); // Recargar la página después de añadir la categoría
-                            });
+                        swal("Error", "Ocurrió un problema al actualizar el producto", "error");
                     }
                 },
                 error: function(xhr, errmsg, err) {
@@ -284,30 +333,78 @@
             });
         });
 
-        // Evento para añadir categoría
-        $(document).on('click', '#confirm_add_product', function(e) {
-            e.preventDefault();
-            var new_product = $('#add_product_name').val();
-            
+        $('#confirm_add_product').click(function() {
+            var new_product_name = $('#add_product_name').val();
+            var new_product_price = $('#add_product_price').val();
+            var new_product_category = $('#add_product_category').val();
+            var new_product_description = $('#add_product_description').val();
+            var new_product_img = $('#add_product_img')[0].files[0];
+        
+            // Crear un objeto FormData para enviar los datos
+            var formData = new FormData();
+            formData.append('new_product_name', new_product_name);
+            formData.append('new_product_price', new_product_price);
+            formData.append('new_product_category', new_product_category);
+            formData.append('new_product_description', new_product_description);
+            formData.append('new_product_img', new_product_img);
+        
+            // Agregar el token CSRF al FormData
+            var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+            formData.append('csrfmiddlewaretoken', csrfToken);
+        
+            // Enviar la solicitud POST al servidor
             $.ajax({
                 type: 'POST',
-                url: '{% url 'add_categories' %}',
-                data: {
-                    new_product_name: new_product,
-                    csrfmiddlewaretoken: '{{ csrf_token }}',
-                    action: 'post'
-                },
+                url: '{% url 'add_products' %}',
+                data: formData,
+                processData: false,
+                contentType: false,
                 success: function(response) {
                     if (response && response.message) {
                         swal("Éxito", response.message, "success")
                             .then(function() {
-                                window.location.reload(); // Recargar la página después de añadir la categoría
+                                $('#add_product_modal').modal('hide');
+                                window.location.reload(); // Recargar la página después de añadir el producto
                             });
                     } else {
-                        swal("Éxito", "Producto agregada exitosamente", "success")
+                        swal("Error", "Ocurrió un problema al agregar el producto", "error");
+                    }
+                },
+                error: function(xhr, errmsg, err) {
+                    swal("Error", "Ocurrió un problema en el servidor", "error");
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+        });
+
+        //Añadir producto
+
+        $('#add_product_form').submit(function(e) {
+            e.preventDefault(); // Prevenir el comportamiento predeterminado del formulario
+    
+            // Obtener los datos del formulario incluyendo la imagen
+            var formData = new FormData(this);
+    
+            // Agregar el token CSRF manualmente si no estás usando Django para renderizarlo en el template
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+            formData.append('action', 'post'); // Asegurarse de incluir esta acción en los datos
+    
+            // Enviar la solicitud AJAX
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'add_products' %}',  // Ajustar la URL según tu configuración
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response && response.message) {
+                        swal("Éxito", response.message, "success")
                             .then(function() {
-                                window.location.reload(); // Recargar la página después de añadir la categoría
+                                $('#add_product_modal').modal('hide');  // Opcional: ocultar el modal después de agregar el producto
+                                window.location.reload(); // Recargar la página después de añadir el producto
                             });
+                    } else {
+                        swal("Error", "Ocurrió un problema al agregar el producto", "error");
                     }
                 },
                 error: function(xhr, errmsg, err) {
@@ -381,7 +478,26 @@
             // Opcionalmente, cerrar el dropdown después de seleccionar
             $(this).closest('.dropdown-menu').removeClass('show');
         });
-        
+
+        $(document).on('click', '.edit-image', function(e) {
+            e.preventDefault();
+            $(this).siblings('.product-image-input').click(); // Simular clic en el selector de archivos
+        });
+    
+        // Evento para cambiar la imagen cuando se selecciona un archivo
+        $(document).on('change', '.product-image-input', function(e) {
+            var input = this;
+            var file = input.files[0];
+            var imageElement = $(this).siblings('.product-image'); // Buscar la imagen dentro del mismo contenedor
+    
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    imageElement.attr('src', e.target.result); // Actualizar la imagen en la fila con la nueva imagen seleccionada
+                };
+                reader.readAsDataURL(file);
+            }
+        });
     });
 </script>
 

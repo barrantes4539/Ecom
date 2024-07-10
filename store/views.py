@@ -12,6 +12,9 @@ import json
 from cart.cart import  Cart
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import ensure_csrf_cookie
+
+
 
 
 #ADMIN FUNCTIONS
@@ -102,23 +105,28 @@ def delete_categories(request):
 
 @require_POST
 def update_products(request):
-    # Asegurarse de que la solicitud sea POST
+    # Ensure that the request is POST
     if request.POST.get('action') == 'post':
-        # Obtener los datos del producto del POST
+        # Get data
         product_id = int(request.POST.get('product_id'))
         product_name = request.POST.get('product_name')
         product_price = request.POST.get('product_price')
         product_category_id = request.POST.get('product_category')  # Obtener el ID de la categoría
+        product_image = request.FILES.get('product_image')  # Obtener la imagen del producto
         
         try:
             # Obtener el producto de la base de datos
             product = Product.objects.get(id=product_id)
             product.name = product_name
-            product.price = product_price
+            product.sale_price = product_price
             
-            # Actualizar la categoría solo si se proporcionó un ID válido
-            if product_category_id:
+            # Actualizar la categoría solo si se proporcionó un ID válido y no es 'undefined'
+            if product_category_id and product_category_id != 'undefined':
                 product.category_id = int(product_category_id)
+
+            # Actualizar la imagen solo si se proporcionó
+            if product_image:
+                product.image = product_image
             
             # Guardar el producto actualizado
             product.save()
@@ -135,6 +143,39 @@ def update_products(request):
             return JsonResponse({'error': str(e)}, status=500)
     
     return JsonResponse({'error': 'Solicitud inválida'}, status=400)
+
+@ensure_csrf_cookie
+@require_POST
+def add_products(request):
+    # Verificar que la acción sea un POST
+    if request.method == 'POST':
+        new_product_name = request.POST.get('new_product_name')
+        new_product_price = request.POST.get('new_product_price')
+        new_product_category_id = request.POST.get('new_product_category')
+        new_product_description = request.POST.get('new_product_description')
+        new_product_img = request.FILES.get('new_product_img')
+
+        try:
+            # Crear una instancia de Product con los datos recibidos
+            new_product = Product(
+                name=new_product_name,
+                sale_price=new_product_price,
+                category_id=new_product_category_id,  # Usar category_id si es una clave externa
+                description=new_product_description,
+                image=new_product_img
+            )
+            new_product.save()
+
+            messages.success(request, "Producto agregado exitosamente")
+            return JsonResponse({'message': f"Producto '{new_product_name}' agregado correctamente."})
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    # Devolver un error si la solicitud no es un POST
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
 
 
 #END ADMIN FUNCIONS
