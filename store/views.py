@@ -36,7 +36,8 @@ def admin_products(request):
         return render(request, 'admin_products.html', {'products': products, 'categories':categories})
     else:
         return redirect('home')
-    
+
+#Admin Categorias
 @require_POST
 def update_categories(request):
     # Ensure the action is 'post'
@@ -103,6 +104,7 @@ def delete_categories(request):
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
+#Admin Productos
 @require_POST
 def update_products(request):
     # Ensure that the request is POST
@@ -173,6 +175,28 @@ def add_products(request):
             return JsonResponse({'error': str(e)}, status=500)
 
     # Devolver un error si la solicitud no es un POST
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+@require_POST
+def delete_products(request):
+    # Ensure the action is 'post'
+    if request.POST.get('action') == 'post':
+        # Get the category ID and the category name from POST data
+        product_id = int(request.POST.get('product_id'))
+        product_name = request.POST.get('product_name')
+
+        try:
+            # Find the category by ID and delete it
+            product = Product.objects.get(id=product_id)
+            product_name = product.name  # Store category name for response message
+            product.delete()
+            
+            return JsonResponse({'message': f"Producto '{product_name}' eliminado correctamente."})
+        except Category.DoesNotExist:
+            return JsonResponse({'error': 'El producto especificada no existe.'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 

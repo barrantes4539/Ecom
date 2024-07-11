@@ -1,14 +1,52 @@
-{% extends 'base.html' %}
+ {% extends 'base.html' %}
 {% block content %}
-<!-- Header-->
-<header class="bg-dark py-5">
-    <div class="container px-4 px-lg-5 my-5">
-        <div class="text-center text-white">
-            <h1 class="display-4 fw-bolder">Tienda con Estilo</h1>
-            <p class="lead fw-normal text-white-50 mb-0">Tenemos lo que necesita!!</p>
+
+{% if user.is_authenticated %}
+    {% if user.is_superuser %}
+        <!-- Contenido para superusuario -->
+        <header class="bg-dark py-5">
+            <div class="container px-4 px-lg-5 my-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 col-md-10 text-center">
+                        <h1 class="display-4 text-white fw-bold mb-4">Panel de Administración</h1>
+                        <p class="lead text-white-50 mb-4">Bienvenido/a, Administrador {{ user.username }}!!! 
+                            <br>Puedes administrar y actualizar la información del sitio.</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+    {% else %}
+        <!-- Contenido para usuarios autenticados no superusuario -->
+        <header class="bg-dark py-5">
+            <div class="container px-4 px-lg-5 my-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 col-md-10 text-center">
+                        <h1 class="display-4 text-white fw-bold mb-4">Disfruta Ecom, {{ user.username }}!!</h1>
+                        <p class="lead text-white-50 mb-4">Actualiza tu información personal y disfruta de los beneficios que te ofrece Ecom.</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+    {% endif %}
+{% else %}
+    <!-- Contenido para usuarios no autenticados -->
+    <header class="bg-dark py-5">
+        <div class="container px-4 px-lg-5 my-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10 text-center">
+                    <h1 class="display-4 text-white fw-bold mb-4">Bienvenido a Ecom!!</h1>
+                    <p class="lead text-white-50 mb-4">Regístrate ahora para disfrutar de una experiencia de compra fluida. Olvídate de ingresar repetidamente tu dirección de entrega y detalles de pago en cada compra.</p>
+                    <div class="mb-4">
+                        <a href="{% url 'register' %}" class="btn btn-primary btn-lg me-4" style="background-color: #0FEFFF; color: black;">Registrarme</a>
+                        <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">Iniciar Sesión</a>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</header>
+    </header>
+{% endif %}
+
+
 
 <!-- Section-->
 <section class="py-5">
@@ -20,25 +58,19 @@
             <div id="noProductsMessage" class="col-12 text-center" style="display: none;">
                 <p>No existe el producto buscado</p>
             </div>
-            {% for product in products %}
-            <div class="col mb-5 product-item">
-                <div class="card h-100">
+            {% for product in products|slice:":6" %}
+            <div class="col-lg-4 col-md-6 mb-4 product-item">
+                <div class="card shadow-sm border-0 h-100">
                     <!-- Product image-->
-                    <img class="card-img-top" style="height: 150px; width: 100%;" src="{{product.image.url}}" alt="..." />
+                    <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.name }}" style="height: 250px; object-fit: cover;">
                     <!-- Product details-->
-                    <div class="card-body p-4">
-                        <div class="text-center">
-                            <!-- Product name-->
-                            <h5 class="fw-bolder">{{ product.name }}</h5>
-                            <!-- Product price-->
-                            ₡{{ product.sale_price }}
-                            <br/>
-                            {{ product.description }}
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold mb-2">{{ product.name }}</h5>
+                        <p class="card-text text-muted mb-3">{{ product.description }}</p>
+                        <div class="mt-auto text-center">
+                            <div class="price">₡{{ product.sale_price }}</div>
+                            <a href="{% url 'product' product.id %}" class="btn btn-outline-dark mt-3">View Product</a>
                         </div>
-                    </div>
-                    <!-- Product actions-->
-                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                        <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="{% url 'product' product.id %}">View Product</a></div>
                     </div>
                 </div>
             </div>
